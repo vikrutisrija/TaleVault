@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaleVault</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            background-color: #444;
+        }
+
+        nav ul li {
+            margin: 0 1rem;
+            position: relative;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            display: block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #333;
+            min-width: 160px;
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #555;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .search-container {
+            text-align: center;
+            margin: 1rem;
+        }
+
+        .search-bar {
+            width: 80%;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .header-image {
+            width: 100%;
+            height: 300px;
+            background-image: url('https://i.pinimg.com/564x/fa/17/90/fa17904b3e92f838846959951b78efac.jpg');
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 1rem;
+        }
+
+        main {
+            flex: 1;
+            padding: 1rem;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .story-preview {
+            border-bottom: 1px solid #ddd;
+            padding: 1rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .story-preview img {
+            max-width: 150px;
+            height: auto;
+            display: block;
+            margin-right: 1rem;
+        }
+
+        .story-preview h2 {
+            margin: 0 0 0.5rem;
+        }
+
+        .story-preview p {
+            margin: 0.5rem 0;
+        }
+
+        .story-detail {
+            display: flex;
+            align-items: flex-start;
+            margin: 1rem 0;
+        }
+
+        .story-detail img {
+            max-width: 40%;
+            height: auto;
+            margin-right: 1rem;
+        }
+
+        .story-detail-content {
+            max-width: 60%;
+        }
+
+        .story-detail-content h2 {
+            margin: 0 0 0.5rem;
+        }
+
+        .story-detail-content p {
+            margin: 0.5rem 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .back-link:hover {
+            background-color: #555;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .rating span {
+            font-size: 1.5rem;
+            color: gold;
+            margin-right: 0.2rem;
+        }
+
+        .rating .star {
+            font-size: 1.5rem;
+            color: gray;
+        }
+
+        .rating .filled {
+            color: gold;
+        }
+
+        .review-summary {
+            margin-top: 1rem;
+        }
+
+        .review-summary p {
+            margin: 0.5rem 0;
+        }
+
+        .review-summary span {
+            font-size: 1.5rem;
+            color: gold;
+        }
+    </style>
+</head>
+<body onload="loadCategory('adventure')">
+    <header>
+        <h1>TaleVault</h1>
+        <nav>
+            <ul>
+                <li><a onclick="loadCategory('adventure')">Adventure</a></li>
+                <li><a onclick="loadCategory('fantasy')">Fantasy</a></li>
+                <li><a onclick="loadCategory('horror')">Horror</a></li>
+                <li><a onclick="loadCategory('mystery')">Mystery</a></li>
+                <li><a onclick="loadCategory('romance')">Romance</a></li>
+                <li><a onclick="loadCategory('scifi')">Sci-Fi</a></li>
+                <li class="dropdown">
+                    <a href="#">More</a>
+                    <div class="dropdown-content">
+                        <a href="#">Free Books</a>
+                        <a href="#">Recommend us</a>
+                        <a href="#">Buy / Sell</a>
+                        <a href="#">About Us</a>
+                        <a href="#">Help</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="search-container">
+        <input type="text" class="search-bar" id="search-bar" placeholder="Search stories...">
+    </div>
+    
+    <main id="content">
+        <div class="header-image"></div>
+        <p>Welcome to TaleVault! Click on a category to explore stories.</p>
+    </main>
+    
+    <footer>
+        <p>&copy; 2024 TaleVault. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const stories = {
+            adventure: [
+                {
+                    id: 1,
+                    title: "The Hobbit",
+                    author: "J.R.R. Tolkien",
+                    date: "1937",
+                    content: "A hobbit named Bilbo Baggins embarks on an epic journey with a group of dwarves to reclaim their treasure from the dragon Smaug.",
+                    content: "Chapter 1 : The hobbit Bilbo Baggins lives a quiet peaceful life in the Shire until one day the wizard Gandalf knocks on his door inviting him on an adventure Bilbo isn't interested but does agree to have tea with Gandalf The next day Gandalf shows up at Bilbo’s home along with 13 dwarves The head dwarf Thorin explains their plan to reclaim a lost treasure guarded by the dragon Smaug They need Bilbo’s help as their burglar Chapter 2 : Reluctantly Bilbo joins the dwarves and their journey begins On the way they stumble upon three trolls around a campfire The trolls capture the dwarves but Gandalf outwits them until sunrise which turns the trolls into stone The group then finds the trolls' hidden stash of weapons and continues their journey , Chapter 3 : The group arrives at Rivendell a beautiful elven city where they meet Elrond the leader of the elves Elrond deciphers the map Thorin carries and reveals that their swords are special goblin-killing blades Refreshed and equipped with this knowledge the group moves on , Chapter 4 : As they cross the Misty Mountains a thunderstorm drives them into a cave for shelter During the night goblins attack and capture them The goblins recognize their powerful swords and attack Thorin but Gandalf intervenes rescuing them and leading them deeper into the mountains The goblins give chase and in the chaos Bilbo is knocked out , Chapter 5 : Bilbo wakes up alone in the dark and finds a mysterious ring He soon encounters a strange creature named Gollum Gollum challenges Bilbo to a riddle contest if Bilbo wins Gollum will show him the way out if he loses Gollum will eat him Bilbo wins by accident and realizing the ring makes him invisible uses it to escape Gollum and find his friends , Chapter 6 : Reuniting with Gandalf and the dwarves Bilbo surprises them with his newfound stealth As they continue they are soon surrounded by Wargs evil wolves and goblins Gandalf fends them off with fire but things look grim until giant eagles swoop in to save them from certain doom , Chapter 7 : The group takes refuge at the home of Beorn a man who can turn into a bear Beorn feeds and shelters them advising them to avoid straying from the path through the dangerous forest of Mirkwood He and Gandalf warn them of the dangers ahead before Gandalf leaves the group to continue on their own , Chapter 8 : In Mirkwood the group strays from the path and gets caught by giant spiders Bilbo using his ring and sword saves the dwarves and leads them to safety They soon realize that Thorin is missing he has been captured by the wood elves , Chapter 9 : The rest of the dwarves are also captured by the elves but Bilbo remains free thanks to his magic ring Bilbo manages to steal the keys free the dwarves and pack them into barrels which are floated downriver to Lake Town , Chapter 8 : In Mirkwood the group strays from the path and gets caught by giant spiders Bilbo using his ring and sword saves the dwarves and leads them to safety They soon realize that Thorin is missing he has been captured by the wood elves , Chapter 9 : The rest of the dwarves are also captured by the elves but Bilbo remains free thanks to his magic ring Bilbo manages to steal the keys free the dwarves and pack them into barrels which are floated downriver to Lake Town , Chapter 10 : The dwarves arrive at Lake Town where Thorin reveals his royal heritage and their mission to reclaim the treasure from Smaug The people of the town are thrilled and provide supplies for the journey to the Lonely Mountain where the treasure awaits " ,
+                    image: "https://m.media-amazon.com/images/I/71k--OLmZKL._AC_UF1000,1000_QL80_.jpg",
+                    type: "Adventure",
+                    rating: 5,
+                    reviews : ["A timeless classic!", "An unforgettable adventure.",]
+                    
+                },
+                {
+                    id: 2,
+                    title: "Treasure Island",
+                    author: "Robert Louis Stevenson",
+                    date: "1883",
+                    content: "A young boy named Jim Hawkins discovers a treasure map and embarks on a thrilling adventure to find buried pirate treasure.",
+                    content: "The story begins with a young boy named Jim Hawkins, who lives with his parents at the Admiral Benbow Inn. One day, a mysterious old sailor named Billy Bones takes up residence at the inn. He possesses a treasure map, and after his sudden death, Jim finds it in Billy's chest. Jim quickly realizes that the map shows the location of a hidden treasure buried on a distant island by the infamous pirate Captain Flint. Jim shares the map with Dr. Livesey and Squire Trelawney, two trusted local gentlemen. They decide to organize a voyage to find the treasure and hire a ship called the Hispaniola, under the command of Captain Smollett. Unbeknownst to them, most of the crew, including the one-legged cook, Long John Silver, are former pirates who served under Flint and are planning to mutiny to take the treasure for themselves. As the ship reaches Treasure Island, Jim overhears the pirates' plan to mutiny and warns Captain Smollett. The loyal crew members prepare for the inevitable confrontation. The situation soon devolves into chaos, with the loyalists and pirates clashing on the island. Jim embarks on a series of adventures: he sneaks off the ship, encounters Ben Gunn, a marooned sailor who had been part of Flint’s crew, and takes control of the ship. Meanwhile, Silver plays a clever game, switching between sides to ensure his own survival. At various points, Silver shows kindness and cunning, and his complex character leaves Jim both admiring and wary of him. Eventually, Jim and his allies outsmart the pirates and find the treasure, which had already been moved by Ben Gunn. With the help of Gunn, they manage to defeat the remaining pirates, leaving only a few survivors. In the end, Silver escapes with a portion of the treasure, while Jim, Dr. Livesey, Squire Trelawney, and Captain Smollett return to England with their riches ",
+                    image: "https://m.media-amazon.com/images/I/710K9pWWZ+L._AC_UF1000,1000_QL80_.jpg",
+                    type: "Adventure",
+                    rating: 4.5,
+                    reviews: ["A gripping tale of pirates!", "An exhilarating journey."]
+                },
+                {
+                    id: 3,
+                    title: "Into the Wild",
+                    author: "Jon Krakauer",
+                    date: "1996",
+                    content: "Into the Wild by Jon Krakauer tells the true story of Chris McCandless, a young man who, after graduating from college in 1990, donates his savings, abandons most of his possessions, and sets out on a cross-country adventure. He adopts the name Alexander Supertramp and cuts off contact with his family as he embarks on a journey to find meaning and self-discovery through solitude and nature. McCandless hitchhikes through the American West and Southwest, encountering various people along the way. His travels are deeply influenced by his philosophical readings from authors like Henry David Thoreau and Jack London, who inspire him to live simply and self-sufficiently. He seeks spiritual enlightenment, rejecting materialism and modern society. His ultimate goal is to survive in the Alaskan wilderness. In April 1992, McCandless arrives in Alaska and sets up camp in an abandoned bus in the Stampede Trail. He thrives initially by living off the land, but over time, his isolation and lack of preparation catch up with him. He struggles to find food as the wildlife becomes scarce, and his inexperience with foraging leads him to consume poisonous plants. By late summer, McCandless becomes weak and malnourished, trapped by the rising Teklanika River, and unable to return to civilization. He documents his physical decline and introspective thoughts in a journal, ultimately realizing the importance of human relationships. In his last note, he writes, “Happiness only real when shared.” In August 1992, his body is found by hunters, having starved to death. Krakauer explores McCandless's motivations, personality, and the allure of wilderness escapism, providing a thought-provoking meditation on youth, adventure, and the consequences of idealism. The book raises complex questions about freedom, individualism, and the human need for connection, presenting Chris McCandless as both a tragic figure and an inspiring one.",
+                    image: "https://m.media-amazon.com/images/I/71EW6GswfuL._AC_UF1000,1000_QL80_.jpg",
+                    type: "Adventure",
+                    rating: 4,
+                    reviews: ["A poignant and powerful journey.", "Incredibly inspiring."]
+                },
+                {
+                    id: 4,
+                    title: "The Call of the Wild",
+                    author: "Jack London",
+                    date: "1903",
+                    content: "The Call of the Wild by Jack London is a novel about a domesticated dog named Buck who is stolen from his comfortable home in California and sold into the harsh life of an Alaskan sled dog during the Klondike Gold Rush. The story begins with Buck living a pampered life on a ranch. However, he is kidnapped and sold to dog traders, who take him to the brutal wilderness of the Yukon. Buck quickly learns the harsh realities of his new life, where he must fight for survival and adapt to the brutal conditions. He experiences abuse from his new owners, and the law of the wild becomes clear: only the strong survive. As Buck endures various hardships, he meets a number of different dogs and humans, each with their own personalities and motivations. He forms a bond with John Thornton, a compassionate man who treats Buck with kindness. Under Thornton's care, Buck begins to discover his true instincts and instincts that connect him to his wild ancestry. Throughout the novel, Buck feels a powerful pull towards the wild, which awakens his primal instincts. He increasingly embraces his wild side, leading him to become more independent and powerful. When Thornton is killed by a group of Native Americans, Buck finally answers the call of the wild, leaving human civilization behind to join a wolf pack and live freely in the wilderness. In the end, Buck fully embraces his true nature, becoming a legendary figure in the wild. The novel explores themes of survival, instinct, and the connection between nature and the wild spirit.",
+                    image: "https://m.media-amazon.com/images/I/81gC9oXiMHL._AC_UF1000,1000_QL80_.jpg",
+                    type: "Adventure",
+                    rating: 4.6,
+                    reviews: ["An unforgettable tale of survival.", "A classic that never gets old."]
+                },
+                {
+                    id: 5,
+                    title: "DEAD GUY NEXT DOOR",
+                    author: "LUCY SCORE",
+                    date: "2022",
+                    content: "The story revolves around Cora, a young woman who leads a somewhat ordinary life in her cozy apartment. However, her world turns upside down when she discovers that her next-door neighbor, Ryder, is found dead in his apartment. This shocking event brings a whirlwind of chaos to her otherwise quiet life. As Cora tries to process the news, she finds herself drawn to the mystery surrounding Ryder. Who was he really? What happened? Despite her initial reluctance, Cora's curiosity piques, and she begins to dig deeper into Ryder's life. In doing so, she uncovers unexpected layers of his personality and the secrets he kept hidden from everyone, including her. Cora’s investigation leads her to interact with various quirky characters in her building, each with their own eccentricities and potential motives. Along the way, she encounters Nate, a charming and handsome guy who becomes her ally. He seems to have his own agenda regarding the investigation, which adds an intriguing tension to their budding relationship. As they delve into the mystery together, Cora and Nate develop a connection filled with chemistry, humor, and unexpected twists. Their banter is witty and playful, lightening the mood amidst the darker themes of the story. However, as they get closer to uncovering the truth about Ryder’s death, they realize they may be in danger themselves. Throughout the story, themes of love, friendship, and the unpredictability of life shine through. Cora learns that sometimes, the most mundane lives can be turned upside down by extraordinary events, and that opening oneself up to others can lead to unexpected adventures. As the mystery unfolds, Cora not only discovers the truth about her neighbor but also about herself. She finds courage, strength, and the willingness to embrace life’s uncertainties, ultimately leading to a satisfying and heartwarming conclusion.",
+                    image: "https://i.pinimg.com/236x/da/fa/fd/dafafde4109e34109bc508e558f85108.jpg",
+                    type: "Adventure",
+                    rating: 4.5,
+                    reviews: [" A delightful blend of humor", " mystery that keeps you guessing until the last page!"]
+                },
+                ],
+            fantasy: [
+            {
+                    id: 6,
+                    title: "The Little Prince",
+                    author: "Antoine de Saint-Exupéry",
+                    date: ": 1943",
+                    content: "A hobbit named Bilbo Baggins embarks on an epic journey with a group of dwarves to reclaim their treasure from the dragon Smaug.",
+                    content: "Follows a young prince from the tiny asteroid B-612 who travels to different planets and learns valuable life lessons. The narrator, a pilot stranded in the Sahara Desert, encounters the prince and listens to his stories. On his journey, the prince meets several characters, including: The King: A ruler with no subjects, symbolizing empty power. The Vain Man: Obsessed with admiration, showing the loneliness of seeking validation. The Drunkard: A man who drinks to forget his shame, illustrating the cycle of escapism. The Businessman: Counting stars as possessions, highlighting the emptiness of materialism. The Geographer: Knowledgeable yet unadventurous, emphasizing the importance of experience. The prince also meets a fox, who teaches him about friendship and responsibility: “You become responsible, forever, for what you have tamed.” This wisdom leads the prince to realize the significance of his love for his rose, despite her flaws. Ultimately, the prince decides to return home to his asteroid and rose. He meets a snake who helps him shed his earthly body, leaving the pilot heartbroken yet understanding the necessity of the prince's journey. The story explores themes of love, friendship, the contrast between childhood and adulthood, and the importance of seeing the world through a child’s perspective." ,
+                    image: "https://m.media-amazon.com/images/I/71OZY035QKL._AC_UF1000,1000_QL80_.jpg",
+                    type: "fantasy",
+                    rating: 5,
+                    reviews : ["A timeless classic that captures the beauty of childhood and the wisdom of love",]
+                    
+                },
+                {
+                    id: 7,
+                    title: "Harry Potter and the Sorcerer's Stone",
+                    author: "J.K. Rowling",
+                    date: "1997",
+                    content: "In a world where magic is real, Harry Potter, a seemingly ordinary boy, discovers that he is actually a wizard on his 11th birthday. He lives with his neglectful aunt, uncle, and cousin, the Dursleys, who have treated him poorly. However, his life takes a thrilling turn when he receives a letter inviting him to attend Hogwarts School of Witchcraft and Wizardry. At Hogwarts, Harry makes new friends, including the clever Hermione Granger and loyal Ron Weasley. Together, they embark on exciting adventures, exploring the enchanted castle, learning spells, and discovering the magical world around them. Harry also learns about his past: he is famous in the wizarding community for surviving an attack by the dark wizard Voldemort, who killed his parents but mysteriously failed to kill him. As the school year progresses, Harry uncovers a mystery involving a magical object known as the Sorcerer’s Stone, which grants immortality. He learns that Voldemort is trying to return to power by obtaining the stone. Determined to protect it, Harry, Ron, and Hermione use their skills and bravery to navigate a series of challenges to reach the stone before Voldemort can. In the end, Harry faces Voldemort, who is weak and unable to take physical form. With the help of his friends and the love of his late parents, Harry manages to thwart Voldemort's plan, saving the stone and protecting the wizarding world. The school year concludes with newfound friendships, a sense of belonging, and the promise of many more magical adventures to come. This captivating tale of friendship, courage, and self-discovery resonates with readers of all ages, inviting them into a world where anything is possible." ,
+                    image: "https://m.media-amazon.com/images/I/81DI+BAN2SL._AC_UF1000,1000_QL80_.jpg",
+                    type: "fantasy",
+                    rating: 4.9,
+                    reviews : ["A timeless classic that ignites the imagination and inspires the spirit of adventure!",]
+                    
+                },
+                {
+                    id: 8,
+                    title: "A Darker Shade of Magic",
+                    author: "V.E. Schwab",
+                    date: " 2015",
+                    content: "A Darker Shade of Magic by V.E. Schwab is an exciting fantasy novel set in a world where parallel Londons exist, each with its own level of magic. The story follows Kell, a magician known as an Antari, who can travel between these Londons: Red London is vibrant with magic and power. Grey London is dull and lacks magic. White London is dangerous, where people fight to control magic. Black London is forbidden and has been consumed by dark magic. Kell serves the royal family of Red London but secretly smuggles items between the Londons. During one of his journeys, he accidentally brings a dangerous artifact from Black London to Red London, which puts everyone at risk. Kell teams up with Lila Bard, a clever thief from Grey London who dreams of adventure. Together, they must navigate through the dangers of the Londons, confront powerful enemies, and stop the dark magic from spreading. The story is filled with action, magic, and the themes of friendship, identity, and the struggle between light and dark. As Kell and Lila's bond grows, they discover their own strengths and the importance of choosing who they want to be. The book blends excitement with rich world-building, making it a captivating read for fans of fantasy." ,
+                    image: "https://m.media-amazon.com/images/I/81Zd2d+NMZL._AC_UF1000,1000_QL80_.jpg",
+                    type: "fantasy",
+                    rating: 4.3,
+                    reviews : ["A captivating tale of magic and adventure that leaves readers eager for more!",]
+                    
+                },
+                {
+                    id: 9,
+                    title: "The Name of the Wind ",
+                    author: " Patrick Rothfuss",
+                    date: "2007",
+                    content: "The Name of the Wind by Patrick Rothfuss is a captivating fantasy novel that follows the story of Kvothe, a gifted young man with a troubled past. The narrative is framed as Kvothe recounts his life story to a chronicler, offering a glimpse into his extraordinary journey. Childhood: Kvothe begins his tale in a traveling troupe of performers, where he learns about music, storytelling, and the art of magic. His life takes a tragic turn when his family is killed by mysterious beings known as the Chandrian. Survival: After the tragedy, Kvothe struggles to survive on the streets, using his wit and charm. He eventually gains admission to the prestigious University, where he seeks knowledge about magic, the Chandrian, and his own identity. Learning and Challenges: At the University, Kvothe faces challenges, including rivalries with other students, the strict rules of the institution, and his growing feelings for a fellow student named Denna. He also delves deep into the study of sympathy (a form of magic) and learns more about the world around him. Legend and Myth/ As Kvothe navigates through his studies and personal struggles, he begins to earn a reputation, becoming a legend in his own right. His story is one of adventure, love, and the search for truth. Throughout the novel, themes of music, storytelling, and the nature of power are explored. Rothfuss weaves a rich and immersive world, filled with unforgettable characters and intricate details, making The Name of the Wind a compelling read for fantasy enthusiasts travel between these Londons: Red London is vibrant with magic and power. Grey London is dull and lacks magic. White London is dangerous, where people fight to control magic. Black London is forbidden and has been consumed by dark magic. Kell serves the royal family of Red London but secretly smuggles items between the Londons. During one of his journeys, he accidentally brings a dangerous artifact from Black London to Red London, which puts everyone at risk. Kell teams up with Lila Bard, a clever thief from Grey London who dreams of adventure. Together, they must navigate through the dangers of the Londons, confront powerful enemies, and stop the dark magic from spreading. The story is filled with action, magic, and the themes of friendship, identity, and the struggle between light and dark. As Kell and Lila's bond grows, they discover their own strengths and the importance of choosing who they want to be. The book blends excitement with rich world-building, making it a captivating read for fans of fantasy." ,
+                    image: "https://m.media-amazon.com/images/I/91UzPegYyjL._AC_UF1000,1000_QL80_.jpg",
+                    type: "fantasy",
+                    rating: 4.7,
+                    reviews : [" A masterful blend of myth and reality that draws readers into a world of magic and music!",]
+                    
+                },
+                {
+                    id: 9,
+                    title: " The Priory of the Orange Tree  ",
+                    author: "Samantha Shannon",
+                    date: " 2019",
+                    content: "The Name of the Wind by Patrick Rothfuss is a captivating fantasy novel that follows the story of Kvothe, a gifted young man with a troubled past. The narrative is framed as Kvothe recounts his life story to a chronicler, offering a glimpse into his extraordinary journey. Childhood: Kvothe begins his tale in a traveling troupe of performers, where he learns about music, storytelling, and the art of magic. His life takes a tragic turn when his family is killed by mysterious beings known as the Chandrian. Survival: After the tragedy, Kvothe struggles to survive on the streets, using his wit and charm. He eventually gains admission to the prestigious University, where he seeks knowledge about magic, the Chandrian, and his own identity. Learning and Challenges: At the University, Kvothe faces challenges, including rivalries with other students, the strict rules of the institution, and his growing feelings for a fellow student named Denna. He also delves deep into the study of sympathy (a form of magic) and learns more about the world around him. Legend and Myth/ As Kvothe navigates through his studies and personal struggles, he begins to earn a reputation, becoming a legend in his own right. His story is one of adventure, love, and the search for truth. Throughout the novel, themes of music, storytelling, and the nature of power are explored. Rothfuss weaves a rich and immersive world, filled with unforgettable characters and intricate details, making The Name of the Wind a compelling read for fantasy enthusiasts travel between these Londons: Red London is vibrant with magic and power. Grey London is dull and lacks magic. White London is dangerous, where people fight to control magic. Black London is forbidden and has been consumed by dark magic. Kell serves the royal family of Red London but secretly smuggles items between the Londons. During one of his journeys, he accidentally brings a dangerous artifact from Black London to Red London, which puts everyone at risk. Kell teams up with Lila Bard, a clever thief from Grey London who dreams of adventure. Together, they must navigate through the dangers of the Londons, confront powerful enemies, and stop the dark magic from spreading. The story is filled with action, magic, and the themes of friendship, identity, and the struggle between light and dark. As Kell and Lila's bond grows, they discover their own strengths and the importance of choosing who they want to be. The book blends excitement with rich world-building, making it a captivating read for fans of fantasy." ,
+                    image: "https://m.media-amazon.com/images/I/91jJM3OtsML._AC_UF1000,1000_QL80_.jpg",
+                    type: "fantasy",
+                    rating: 4.7,
+                    reviews : [" A groundbreaking epic that redefines fantasy with its depth, diversity, and richly crafted world!",]
+                    
+                },
+                {
+                    id: 10,
+                    title: "The Night Circus",
+                    author: "Erin Morgenstern",
+                    date: "2011",
+                    content: "The Night Circus by Erin Morgenstern is a mesmerizing fantasy about a magical circus called Le Cirque des Rêves (The Circus of Dreams), which appears without warning and only opens at night. The circus is filled with enchanting performances and dreamlike experiences, but at its heart lies a secret competition between two young magicians, Celia Bowen and Marco Alisdair. Celia and Marco have been trained from childhood by their mentors, Prospero the Enchanter and Mr. A.H., to compete in a mysterious game of magic. However, neither of them knows the true rules or the cost of the competition. Their battleground is the circus itself, with each of their magical creations adding to its wonders—illusionary gardens, ice mazes, and tents filled with impossible delights. As the competition intensifies, Celia and Marco unexpectedly fall in love, complicating the game and putting everyone involved in danger. The circus performers and patrons are unknowingly affected by the magic and the escalating stakes of the contest. Throughout the novel, the narrative alternates between different timelines and perspectives, weaving a story full of mystery, love, and enchantment. As secrets are unveiled, it becomes clear that the competition can only end in one of two ways: with one magician’s victory and the other’s demise. In the end, Celia and Marco find a way to break the cycle of the competition without destroying the circus or each other. They choose to sacrifice their physical forms, binding themselves to the circus and ensuring its survival while allowing the performers and visitors to live free of the game's influence. The Night Circus is a spellbinding tale of magic, love, and the power of imagination, set in a world where dreams and reality blend seamlessly. Its rich, atmospheric storytelling invites readers to lose themselves in the mysterious, dreamlike world of Le Cirque des Rêves." ,
+                    image: "https://m.media-amazon.com/images/I/71+whvJjE3L._AC_UF1000,1000_QL80_.jpg",
+                    type: "fantasy",
+                    rating: 4.4,
+                    reviews : ["An enchanting tale that captivates the senses and weaves a spell of wonder and romance!",]
+                    
+                },
+                
+            ],
+            horror: [
+                {
+                    id: 11,
+                    title: "The Haunting of Hill House",
+                    author: "Shirley Jackson",
+                    date: "1959",
+                    content: "The story centers on Hill House, an old mansion with a dark and mysterious history of death and madness. Dr. John Montague, a scholar of the supernatural, invites a group of people to stay at Hill House to investigate the eerie occurrences that have been reported there. Among the guests are Eleanor Vance, a lonely and troubled woman; Theodora, a lively and independent artist; and Luke Sanderson, the future heir of Hill House. Eleanor, who has experienced strange paranormal events in her past, quickly becomes the focal point of the house's dark influence. From the moment she arrives, Hill House seems to come alive, as strange noises, cold spots, and unsettling events begin to torment the group. As time passes, the house's sinister energy appears to fixate on Eleanor, who is both frightened and drawn to the building's malevolent power. She begins to lose her sense of reality, feeling as though the house is calling to her and offering her a place of belonging, something she has long craved. The other guests grow concerned for her safety as Eleanor's mental state deteriorates. The tension builds as Hill House manipulates Eleanor’s emotions and actions, leading her deeper into madness. The story concludes with Eleanor meeting a tragic fate, as the house seemingly consumes her, leaving the remaining guests shaken and forever haunted by their experience. Shirley Jackson's The Haunting of Hill House is a masterful exploration of psychological horror, using the eerie and oppressive atmosphere of the house to blur the line between the supernatural and the mental struggles of its characters. The novel leaves readers questioning whether the true horror lies in the haunted house or in the mind of those who inhabit it." ,
+                    image: "https://m.media-amazon.com/images/I/81mozNKlfbL._AC_UF1000,1000_QL80_.jpg",
+                    type: " horror",
+                    rating: 5,
+                    reviews : ["A chilling, psychological descent into terror and madness!",]
+                    
+                },
+                {
+                    id: 12,
+                    title: "The Shining",
+                    author:"Stephen King",
+                    date: "1977",
+                    content:"The Shining by Stephen King is a psychological horror novel that tells the chilling story of Jack Torrance, a struggling writer and recovering alcoholic, who takes a job as the winter caretaker of the isolated Overlook Hotel. Jack moves to the hotel with his wife Wendy and his young son Danny, hoping the quiet and solitude will help him focus on his writing and rebuild his life. However, the Overlook Hotel is not an ordinary place. It has a dark and violent past, filled with ghosts and sinister forces that begin to influence Jack. The hotel feeds on Jack’s vulnerabilities—his anger, frustrations, and the pressures of his life—slowly driving him to madness. As the winter snow traps the family inside the hotel, Jack becomes increasingly unstable and violent. At the same time, Danny, who possesses a psychic ability called “the shining,” begins to experience terrifying visions of the hotel’s past and its malevolent spirits. He sees gruesome images of the hotel’s previous guests and staff and senses the evil presence growing stronger. Danny’s connection with the hotel’s supernatural forces makes him a target of the Overlook, which wants to use Jack to harm his family. As Jack’s mental state deteriorates, he becomes more aggressive, ultimately succumbing to the hotel’s influence. He turns on Wendy and Danny, leading to a terrifying showdown where Wendy and Danny must fight for their lives. With the help of his psychic abilities and guidance from a friendly hotel cook, Dick Hallorann, Danny manages to escape the hotel’s deadly grip. In the end, the Overlook Hotel is destroyed in a boiler explosion, but the haunting memories of what happened inside linger with those who survived. The Shining is a tense, haunting tale of a family unraveling under the weight of supernatural forces and the dark side of human nature" ,
+                    image: "https://m.media-amazon.com/images/I/81CuEX3W9UL._AC_UF1000,1000_QL80_.jpg",
+                    type: " horror",
+                    rating: 4.5,
+                    reviews : ["A bone-chilling, suspenseful journey into madness and the supernatural!",]
+                    
+                },
+                {
+                    id: 13,
+                    title: " The Silence of the Lambs ",
+                    author:" Thomas Harris",
+                    date: "1988",
+                    content:"The Silence of the Lambs by Thomas Harris is a psychological thriller that follows FBI trainee Clarice Starling as she seeks the help of Dr. Hannibal Lecter, a brilliant but imprisoned cannibalistic serial killer, to catch another dangerous murderer on the loose: Buffalo Bill. Buffalo Bill is abducting and killing women, leaving little evidence behind, and the FBI is desperate to stop him. Clarice is tasked with interviewing Dr. Lecter, hoping that his insight into the mind of a killer will provide clues to track down Buffalo Bill. Dr. Lecter is both fascinated by and manipulative toward Clarice, offering cryptic clues in exchange for personal details about her life, particularly her traumatic childhood. As Clarice delves deeper into the case, she uncovers shocking connections between Buffalo Bill and Dr. Lecter’s past, while Lecter plays a dangerous psychological game with her. Despite the challenges, Clarice pieces together the information and ultimately confronts Buffalo Bill in a suspenseful showdown. Meanwhile, Dr. Lecter, ever the mastermind, engineers a brutal escape from prison, leaving the authorities unsure of his whereabouts by the novel’s end. The Silence of the Lambs is a gripping story of psychological tension, featuring the unforgettable interplay between Clarice and Dr. Lecter. It explores the darkest aspects of human nature, the mind of a serial killer, and the complexities of power, control, and fear." ,
+                    image: "https://m.media-amazon.com/images/I/814fRILnbnL._AC_UF1000,1000_QL80_.jpg",
+                    type: " horror",
+                    rating: 4,
+                    reviews : [" A nerve-wracking psychological thriller that redefines fear!",]
+                    
+                },
+                {
+                    id: 14,
+                    title: "Bird Box",
+                    author:"Josh Malerman",
+                    date: "2014",
+                    content:"Bird Box by Josh Malerman is a gripping post-apocalyptic thriller set in a world where an unseen presence causes people to go mad and commit violent acts of suicide upon sight. The novel follows Malorie, a young woman, as she struggles to survive in this terrifying new reality. The story is split between two timelines. In the present, Malorie and her two young children, known only as Boy and Girl, are attempting a dangerous journey down a river, blindfolded to avoid seeing the mysterious entities that have decimated humanity. Their destination is a safe haven, but they must navigate the treacherous waters while relying only on their hearing and instincts. In flashbacks, we learn how Malorie’s world collapsed. After the arrival of the mysterious force, Malorie and a group of survivors took refuge in a house, covering all windows and using blindfolds whenever they ventured outside. Tensions rise as the group tries to maintain sanity and survive in total darkness, unsure of what might be lurking outside. Over time, tragedy strikes, and Malorie is left to fend for herself and her children. Malorie's harrowing journey down the river is filled with moments of intense suspense, as even the slightest sound could signal danger. Throughout the story, she reflects on survival, motherhood, and the will to protect her children in an unimaginable situation. Bird Box is a haunting and suspenseful tale about the horrors of the unseen, the fear of the unknown, and the lengths a mother will go to keep her children safe. It’s a tense psychological thriller that explores human resilience in the face of terrifying, invisible dangers." ,
+                    image: "https://m.media-amazon.com/images/I/91jBfwPCeKL._AC_UF1000,1000_QL80_.jpg",
+                    type: " horror",
+                    rating: 4,
+                    reviews : ["A claustrophobic and unsettling tale of survival and terror!",]
+                    
+                },
+                {
+                    id: 15,
+                    title: "The Exorcist",
+                    author:"William Peter Blatty",
+                    date: "1971",
+                    content:"The Exorcist by William Peter Blatty is a classic horror novel that tells the terrifying story of a young girl’s demonic possession and the harrowing struggle to save her. Set in Georgetown, Washington D.C., the novel revolves around Regan MacNeil, a 12-year-old girl who begins to exhibit bizarre and disturbing behavior—violent outbursts, strange voices, and physical changes that defy scientific explanation. Regan’s mother, Chris MacNeil, a successful actress, is terrified as medical tests and psychiatric help fail to provide answers. Desperate and with nowhere else to turn, Chris seeks the help of Father Damien Karras, a Jesuit priest and psychiatrist who is grappling with his own doubts about his faith. Initially skeptical, Father Karras soon realizes that Regan’s condition goes beyond any psychological disorder—it’s the work of an ancient and powerful demonic force. To confront the evil presence, Father Karras calls upon Father Merrin, an experienced exorcist who has faced demonic entities before. Together, the two priests attempt to exorcise the demon, engaging in a brutal spiritual battle that tests both their faith and their physical endurance. The demon taunts and torments them, using Regan’s voice and body to unleash a terrifying series of attacks, trying to break their spirits. As the exorcism intensifies, Father Karras is forced to confront his own inner demons and the guilt over his mother’s death. The novel’s climax is a heart-pounding showdown between good and evil, leading to a tragic yet redemptive conclusion. The Exorcist is a gripping exploration of faith, the supernatural, and the struggle between good and evil. It is renowned for its vivid descriptions, psychological depth, and its ability to provoke fear and dread, making it one of the most iconic and influential horror novels of all time.",
+                    image: "https://m.media-amazon.com/images/I/81eInA3q66L._AC_UF1000,1000_QL80_.jpg",
+                    type: " horror",
+                    rating: 5,
+                    reviews : [" A horrifying battle between good and evil that will shake you to your core!",]
+                    
+                },
+                {
+                    id: 16,
+                    title: "The Girl Next Door",
+                    author:"Jack Ketchum",
+                    date: "1989",
+                    content:"The Girl Next Door by Jack Ketchum is a disturbing and harrowing psychological horror novel based on true events. The story is set in a suburban neighborhood during the 1950s and revolves around two sisters, Meg and Susan Loughlin, who are sent to live with their aunt, Ruth Chandler, after the death of their parents.At first, Ruth seems like a normal, if somewhat strict, guardian to the sisters. However, as time passes, Ruth’s abusive tendencies come to light, particularly toward Meg, whom she begins to torment both emotionally and physically. Ruth’s cruelty escalates as she enlists her three sons and other local boys to participate in the abuse, locking Meg in the basement, where she is subjected to unspeakable horrors. The novel is narrated by David, a boy who lives next door and witnesses the unfolding nightmare. David is both horrified and helpless as he watches Meg’s suffering at the hands of Ruth and the neighborhood boys. Despite his growing guilt and the occasional attempt to intervene, David fails to stop the abuse, making him a passive observer to the evil within his own community. As the torment becomes more severe, the story reaches a devastating climax. The emotional and physical toll on Meg is unbearable, and the consequences of Ruth’s sadism leave a permanent scar on everyone involved. The Girl Next Door is a deeply unsettling and emotionally intense novel that explores the darkest aspects of human nature, cruelty, and the consequences of inaction. It is a powerful, but painful, story of abuse, complicity, and the horrific potential for evil in ordinary people. The novel’s brutal realism and unflinching portrayal of violence make it one of the most disturbing books in the horror genre." ,
+                    image: "https://m.media-amazon.com/images/I/61PwDjk-jWL._AC_UF1000,1000_QL80_.jpg",
+                    type: " horror",
+                    rating:3,
+                    reviews : ["A haunting, brutal tale of human evil that is hard to stomach!",]
+                    
+                },
+                {
+                    id: 17,
+                    title: "The four friends that twenty years night",
+                    author:"Nidhi upadhyay",
+                    date: "2021",
+                    content:"The Four Friends That Twenty Years Night follows the story of four friends—Aarav, Riya, Karan, and Neha—who initially meet in a hostel during their college years. United by their shared experiences, they form a close-knit group that enjoys each other's company and embarks on various adventures, including a memorable night when they play an Ouija board game, a decision that forever alters their friendship. The game sparks unexpected events and revelations that create both intrigue and tension within the group. After their college days, life takes the friends in different directions, leading them to pursue their careers and personal lives. Years pass, and the once inseparable group gradually drifts apart. However, a sudden twist of fate reignites their connection when a WhatsApp group is created, bringing back memories of their past and reigniting old feelings. The group chat serves as a platform for them to reconnect, share updates, and reflect on their experiences since their hostel days. As the friends communicate through the WhatsApp group, they reminisce about the Ouija board game and the mysterious events that unfolded that night, prompting them to confront their past and the unresolved issues that led to their separation. Through humor and heartfelt conversations, they navigate the complexities of adulthood, personal struggles, and the impact of their shared history on their lives. The Four Friends That Twenty Years Night explores themes of friendship, nostalgia, and the passage of time. Upadhyay beautifully illustrates the enduring bonds that can withstand years of separation while highlighting the importance of revisiting and addressing the past. The story ultimately emphasizes that true friendship can be rekindled, no matter how much time has passed, inviting readers to cherish their own connections and the memories that shape them." ,
+                    image: "https://m.media-amazon.com/images/I/81b1PP4RK1L._AC_UF1000,1000_QL80_.jpg",
+                    type: " horror",
+                    rating:4.5,
+                    reviews : ["What happens when an innocent prank goes horribly wrong!",]
+                    
+                },
+
+            ],
+            mystery: [
+                {
+                    id: 18,
+                    title: "After Twenty Years",
+                    author:"O. Henry",
+                    date: "1906",
+                    content:"After Twenty Years by O. Henry is a short story about two old friends, Bob and Jimmy, who made a promise to meet at the same place after twenty years. The story takes place at night, in front of a hardware store, where Bob is waiting for his friend. Bob is confident that Jimmy will come, even though they haven't seen each other in two decades. As Bob waits, a police officer comes by and talks to him. Bob tells the officer about the promise he made with his friend Jimmy. They were close in their youth, but their lives took different paths—Bob left for the West to seek fortune, while Jimmy stayed in New York. After the officer leaves, another man approaches, claiming to be Jimmy. At first, Bob is happy to see him and excited to catch up. However, when they step into better lighting, Bob realizes the man is not Jimmy. The man reveals that Bob is under arrest and hands him a note. The note explains that the police officer from earlier was actually Jimmy, but when he saw that Bob was a wanted criminal, he couldn’t arrest him himself and had someone else do it. Jimmy's loyalty to the law overcame his personal bond with Bob. The story highlights themes of friendship, time, loyalty, and the unpredictable turns life can take. O. Henry’s twist ending adds emotional depth and showcases his signature irony." ,
+                    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8s6LcSIh9MlezGBAnpWcnwToIEWkTGfquUdHZ5YfOu9ls5U74KJsa0YkWAKqZ_Raej1o&usqp=CAU",
+                    type: " Mystery",
+                    rating:4.7,
+                    reviews : ["A touching mystery about friendship and the passage of time, with a brilliant twist ending that leaves you reflecting on loyalty and duty",]
+                    
+                },
+                {
+                    id: 19,
+                    title: "Lamb to the Slaughter",
+                    author:"Roald Dahl",
+                    date: "1953 // Available on:Course Hero or StudyLib",
+                    content:"Lamb to the Slaughter by Roald Dahl is a darkly humorous short story about betrayal and revenge. The story begins with Mary Maloney, a loving and devoted wife, who is six months pregnant. She eagerly waits for her husband, Patrick, to come home from work. Patrick, a police officer, arrives home, but he's unusually distant. After some conversation, he abruptly tells Mary that he is leaving her, though the exact reasons are not directly revealed. Mary is shocked and heartbroken by the news. In a daze, she goes to the kitchen to prepare dinner and grabs a frozen leg of lamb. When she returns to the living room, without thinking, she hits Patrick over the head with the frozen meat, killing him instantly. After realizing what she’s done, Mary quickly composes herself and begins to plan a way to cover up the crime. She puts the leg of lamb in the oven to cook, then goes out to the grocery store to create an alibi. When she returns home, she pretends to discover her husband's dead body and calls the police. When the police arrive, they are sympathetic to her as the grieving widow. The officers, unaware of Mary’s role in Patrick's death, search the house for clues. In a clever twist, as the officers investigate, Mary offers them the leg of lamb for dinner, which they unknowingly eat—destroying the murder weapon in the process. One officer even comments that the murder weapon is probably right under our noses which is ironic since they are literally consuming it. The story plays on themes of betrayal, manipulation, and the idea of a perfect crime. Roald Dahl's signature dark humor and twist ending make this a compelling and chilling tale." ,
+                    image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1609351986i/13382062.jpg",
+                    type: " Mystery",
+                    rating:4.6,
+                    reviews : ["A housewife’s cold-blooded crime and her ingenious way of covering it up make this a darkly humorous, memorable mystery",]
+                    
+                },
+                {
+                    id: 20,
+                    title: "The Perfect Murder",
+                    author:"Jeffrey Archer",
+                    date: "1988",
+                    content:"The Perfect Murder by Jeffrey Archer is a short story about a man named Trevor who meticulously plans to murder his wife, Margaret, in order to escape his unhappy marriage and start a new life with his lover. The story is filled with suspense and clever twists as Trevor believes he has devised the perfect crime, but things don't unfold as expected. Trevor is a middle-aged man in a strained marriage. He decides to murder his wife, hoping to collect insurance money and run away with his mistress. Trevor carefully plans every detail of the murder, from the time and place to creating a perfect alibi. He buys a dagger, intending to make it look like a burglary gone wrong. He rehearses everything in his mind, ensuring there will be no loose ends. On the night of the planned murder, Trevor sneaks into his own home and kills Margaret, thinking his plan has gone off without a hitch. However, when the police arrive to investigate, things take an unexpected turn. The police officer reveals that Trevor's wife had discovered his affair and, just before her death, had changed her will, leaving everything to a charity. The final twist comes when Trevor’s mistress, who was supposed to be his partner in crime, turns on him. She informs the police that Trevor had confided his murder plan to her, ultimately leading to his arrest. Trevor's perfect plan unravels, and instead of escaping his troubled life, he is left facing the consequences of his crime. The story highlights themes of greed, betrayal, and the illusion of control. Jeffrey Archer's sharp storytelling and the ironic ending add to the impact, showing how even the best-laid plans can go terribly wrong." ,
+                    image: "https://m.media-amazon.com/images/I/51yp2Trk-VL._AC_UF1000,1000_QL80_.jpg",
+                    type: " Mystery",
+                    rating:4.4,
+                    reviews : ["A suspenseful, tightly woven mystery about a murder that seems flawless—until an unexpected twist unravels it all.",]
+                    
+                },
+                {
+                    id: 21,
+                    title: "The Lottery",
+                    author:"Shirley Jackson",
+                    date: "1948",
+                    content:"The Lottery by Shirley Jackson is a chilling short story about a small town that holds an annual lottery with a shocking and dark twist. Set in a seemingly ordinary rural community, the story begins on a bright summer day where the townspeople gather in the village square for the yearly event. The mood is casual and lighthearted, with children playing and adults chatting. The lottery is organized by Mr. Summers, who oversees the event. Each family in the town is required to participate, and slips of paper are drawn from a black box. As the lottery progresses, the tension begins to build. One slip of paper, marked with a black dot, determines the winner of the lottery. When the Hutchinson family draws the marked slip, Tessie Hutchinson, the mother, protests, claiming that the lottery is unfair. Despite her pleas, her family is singled out for the final drawing. Each member of the family draws again, and Tessie herself picks the slip with the black dot. In a shocking turn of events, it is revealed that the winner of the lottery is to be stoned to death by the entire town as part of an ancient ritual. Tessie, who had been a willing participant in the lottery moments earlier, becomes the victim, and the townspeople—including her own family—turn on her without hesitation. The story explores themes of conformity, tradition, and the dark side of human nature. Shirley Jackson uses the setting of an ordinary town to illustrate how blind adherence to tradition can lead to senseless violence. The casual tone of the townspeople contrasts starkly with the brutal reality of the lottery’s true purpose, making the ending all the more horrifying." ,
+                    image: "https://m.media-amazon.com/images/I/91LEmJaDfDL._AC_UF1000,1000_QL80_.jpg",
+                    type: " Mystery",
+                    rating:4.7,
+                    reviews : ["A chilling exploration of tradition and mob mentality, this story gradually reveals a horrifying twist that leaves a lasting impression.",]
+                    
+                },
+                {
+                    id: 22,
+                    title: "The Birds",
+                    author:"Daphne du Maurier",
+                    date: "1952",
+                    content:"The Birds is a chilling and atmospheric story by Daphne du Maurier, first published in 1952. It centers around Nat Hocken, a farm worker living in a small, rural town in England, and his family. Nat, who works part-time due to a war injury, notices strange behavior in the birds around their coastal town. Normally peaceful birds begin to act more aggressively as winter approaches, a phenomenon that Nat dismisses at first. However, things escalate quickly when the birds launch vicious, organized attacks on the people of the town. Initially, the attacks occur at night, but soon they become more frequent and violent. The birds, regardless of their size or species, seem to have a single purpose: to kill the human inhabitants. Nat realizes that the birds' behavior coincides with the east wind, which brings a cold, ominous atmosphere to the region. As the attacks become more coordinated and deadly, Nat barricades his home and tries to protect his family. Communication with the outside world is cut off, and they hear reports of similar bird attacks across England, but the reasons behind the attacks remain unknown. The government and military seem powerless against this natural disaster. Nat’s sense of isolation grows as the story progresses, and there’s an increasing sense of hopelessness. The story ends on a bleak note, with Nat preparing for another night of bird assaults, uncertain of what the future holds. The story leaves readers with an eerie sense of vulnerability, as the once harmless creatures turn into unstoppable forces of terror." ,
+                    image: "https://m.media-amazon.com/images/I/91G8BrZnIKL._AC_UF1000,1000_QL80_.jpg",
+                    type: " Mystery",
+                    rating:4.6,
+                    reviews : ["A gripping, atmospheric tale where nature turns violently against humanity, creating a sense of relentless dread and suspense.",]
+                    
+                },
+            ],
+            romance: [
+                {
+                    id: 23,
+                    title: "The Tell-Tale Heart",
+                    author:"Edgar Allan Poe",
+                    date: "1853",
+                    content:"The Tell-Tale Heart by Edgar Allan Poe is a classic short story about madness, guilt, and paranoia. The narrator, who insists on his sanity, becomes obsessed with the old man he lives with, particularly the old man’s pale, vulture-like eye. Convinced that the eye is evil, the narrator decides to kill the old man to rid himself of it. For seven nights, he sneaks into the old man’s room, but he cannot bring himself to commit the murder because the old man’s eye is closed. On the eighth night, the old man awakens, and the narrator sees the eye wide open. Overcome with terror and madness, he kills the old man and dismembers the body, hiding it under the floorboards. He feels triumphant, believing he has committed the perfect crime. However, soon after, the narrator begins hearing a faint, thumping noise—he believes it's the old man's heart still beating under the floorboards. Driven to insanity by the sound, which grows louder and louder, he finally confesses to the murder, revealing his crime to the police, who had come to investigate the disturbance. The story explores themes of guilt, madness, and the consequences of one's actions." ,
+                    image: "https://m.media-amazon.com/images/I/61uR-IeHCEL._AC_UF1000,1000_QL80_.jpg",
+                    type: "Romantic",
+                    rating:4.7,
+                    reviews : ["A masterclass in psychological horror, where guilt unravels the mind.",]
+                    
+                },
+                {
+                    id: 24,
+                    title: "The Notebook",
+                    author:"Nicholas Sparks",
+                    date: "1996",
+                    content:"The Notebook is a romantic novel that tells the poignant love story of Noah Calhoun and Allie Nelson, spanning several decades. The narrative alternates between their youthful romance in the 1940s and Noah's present-day reflections as he reads from a notebook that details their past. Noah, a poor country boy, falls in love with Allie, a wealthy young woman, during a summer in New Bern, North Carolina. Despite their deep connection, societal differences and family pressures lead to their separation. Allie moves on with her life, becoming engaged to another man, while Noah never forgets her. He pours his heart into restoring an old plantation home, hoping to attract her back. Years later, Allie sees a newspaper article about Noah and his house and decides to visit him. Their reunion reignites old feelings, and they spend a passionate weekend together. However, Allie is torn between her feelings for Noah and her commitment to her fiancé.The novel explores themes of enduring love, memory, and the choices that define us. In the end, Allie must decide whether to follow her heart or remain in her current relationship. The story concludes with a powerful message about love’s resilience, as Noah and Allie’s bond transcends time and challenges, showcasing their profound connection, even in the face of life's complexities." ,
+                    image: "https://m.media-amazon.com/images/I/81qh61Wsb6L._AC_UF1000,1000_QL80_.jpg",
+                    type: "Romantic",
+                    rating:4,
+                    reviews : ["A classic love story that explores enduring romance and the power of memory.",]
+                    
+                },
+                {
+                    id: 25,
+                    title: "The Time Traveler’s Wife",
+                    author:"Audrey Niffenegger",
+                    date: "2003",
+                    content:"The Time Traveler’s Wife is a unique love story that intertwines romance with elements of science fiction. The novel follows the lives of Henry DeTamble, a man with a genetic disorder that causes him to involuntarily time travel, and Clare Abshire, the woman who loves him. The narrative unfolds in a non-linear fashion, alternating between Henry's and Clare's perspectives across different timelines. Henry often finds himself transported to various moments in his life, sometimes as a child and sometimes as an adult. These jumps are unpredictable and often lead him to important events in Clare’s life, starting when she is just a child and he is an adult. Clare, who first meets Henry in a park when she is six years old, becomes enamored with him. Their relationship develops as she grows older and Henry continues to visit her throughout her life. Despite the challenges posed by Henry's time travel, including the unpredictability of his arrivals and the emotional toll it takes on both of them, their love remains steadfast. The story explores themes of fate, love, and the impact of time on relationships. Clare and Henry face numerous challenges, including longing, separation, and the struggles of building a life together. Ultimately, the novel reflects on the nature of love, the passage of time, and the bittersweet aspects of their extraordinary relationship. As they navigate the complexities of their lives, the bond between Clare and Henry is both heartwarming and heart-wrenching, illustrating the power of love in the face of adversity." ,
+                    image: "https://m.media-amazon.com/images/I/71Ka17Z921L._AC_UF1000,1000_QL80_.jpg",
+                    type: "Romantic",
+                    rating:5,
+                    reviews : ["A beautifully crafted narrative blending romance and fantasy, capturing the complexities of love across time",]
+                    
+                },
+                {
+                    id: 26,
+                    title: "Me Before You",
+                    author:" Jojo Moyes",
+                    date: "2012",
+                    content:"Me Before You is a poignant novel that explores themes of love, disability, and the right to choose one's own destiny. The story centers on Louisa Clark, a quirky and unambitious young woman from a small town in England, who unexpectedly becomes a caregiver for Will Traynor, a wealthy and successful businessman who is paralyzed from the neck down after a tragic accident. Initially, Louisa is hesitant about the job, but as she spends more time with Will, she learns about his intelligence, wit, and zest for life despite his physical limitations. Will, however, is struggling with his new reality and is deeply unhappy, contemplating assisted suicide in Switzerland to escape his pain and feelings of confinement. Louisa is determined to show Will that life is still worth living, and she embarks on a mission to introduce him to new experiences, encouraging him to embrace the world outside his home. Through a series of adventures, the two develop a close bond, and Louisa begins to fall in love with Will. As their relationship deepens, Louisa grapples with the moral complexities of Will’s decision regarding his life and autonomy. The novel culminates in an emotional climax as Will ultimately decides to go through with his plan to end his life. Louisa is left heartbroken but transformed by her experiences with him, leading her to reevaluate her own life choices and aspirations. Me Before You challenges readers to consider the value of life, the impact of love, and the difficult choices faced by those with disabilities, leaving a lasting impression about the complexities of love and the right to make one’s own choices." ,
+                    image: "https://m.media-amazon.com/images/I/71+YK9HSaJL._AC_UF1000,1000_QL80_.jpg",
+                    type: "Romantic",
+                    rating:4,
+                    reviews : ["A poignant exploration of love and life choices, evoking deep emotional responses.",]
+                    
+                },
+                {
+                    id: 27,
+                    title: "The Fault in Our Stars",
+                    author:"John Green",
+                    date: "2012",
+                    content:"The Fault in Our Stars is a heartfelt young adult novel that tells the story of Hazel Grace Lancaster, a sixteen-year-old girl living with cancer. Despite her illness, Hazel is intelligent, witty, and introspective. She attends a support group for cancer patients at the urging of her mother, where she meets Augustus Waters, a charming and charismatic boy who is in remission after losing a leg to osteosarcoma. As Hazel and Augustus bond over their shared experiences with illness and their love for literature, particularly a novel titled An Imperial Affliction, their relationship deepens into a romantic connection. Augustus's confident outlook on life contrasts with Hazel's more cynical view, shaped by her struggles with cancer and the impact it has on her life and relationships.Their journey takes them to Amsterdam, where they meet the reclusive author of An Imperial Affliction. This trip becomes a pivotal moment for both characters as they confront their fears, desires, and the realities of living with terminal illness. Throughout the story, themes of love, mortality, and the search for meaning in life are explored. Hazel grapples with the idea of leaving a legacy and the burden of being loved by someone when she feels she might not be worth it. Augustus's bravado and optimism challenge her perceptions and ultimately lead her to embrace love and life, despite the uncertainties they face. The novel concludes with a profound emotional impact, illustrating the beauty and fragility of life and love, even in the face of tragedy. It captures the essence of young love and the complexities of dealing with loss, leaving readers with a poignant reflection on the meaning of existence and the connections we forge with others." ,
+                    image: "https://images-eu.ssl-images-amazon.com/images/I/61fbVx3W5cL._AC_UL210_SR210,210_.jpg",
+                    type: "Romantic",
+                    rating:5,
+                    reviews : ["A heart-wrenching love story that balances humor and tragedy, resonating with readers worldwide.",]
+                    
+                },
+                {
+                    id: 28,
+                    title: "Outlander",
+                    author:" Diana Gabaldon",
+                    date: "1991",
+                    content:"Outlander is a historical fiction novel that blends romance, adventure, and time travel. The story follows Claire Randall, a former World War II combat nurse who is on a second honeymoon with her husband, Frank, in the Scottish Highlands in 1945. While exploring the ruins of an ancient stone circle, Claire touches one of the stones and is mysteriously transported back in time to 1743. In this unfamiliar and tumultuous world, Claire encounters a group of Scottish clansmen and is rescued by Jamie Fraser, a ruggedly handsome and brave Highland warrior. As she navigates this new reality, Claire is torn between her longing for her husband Frank, who she believes is lost to her in the future, and her growing feelings for Jamie. As the story unfolds, Claire becomes deeply involved in the Jacobite risings and the conflicts of the time, facing numerous challenges and dangers. Her medical knowledge proves invaluable as she helps heal those around her, earning the trust and respect of the clan. Meanwhile, her bond with Jamie intensifies, leading to a passionate and complex relationship. Claire is forced to confront the realities of her situation, including the cultural and social differences between her time and the 18th century. The novel explores themes of love, loyalty, and the struggle for survival in a world marked by political upheaval and personal sacrifice. As Claire grapples with her feelings for Jamie and her desire to return to her own time, she ultimately must make a choice that will alter the course of her life forever. Outlander is a richly detailed and emotionally charged narrative that captures the essence of love across time, the challenges of identity, and the power of fate." ,
+                    image: "https://m.media-amazon.com/images/I/51oGU5pdSZL._AC_UF1000,1000_QL80_.jpg",
+                    type: "Romantic",
+                    rating:4,
+                    reviews : [" A sweeping historical romance filled with adventure, time travel, and passionate love.",]
+                    
+                },
+            ],
+            scifi: [
+                {
+                    id: 29,
+                    title: "The Martian",
+                    author:"Andy Weir",
+                    date: "2011",
+                    content:"The Martian follows astronaut Mark Watney, who is left behind on Mars after a storm forces his crew to abort their mission. Believed to be dead, Mark wakes up alone with limited supplies and no way to contact Earth. Faced with this impossible situation, he uses his skills as a botanist and engineer to come up with creative solutions for survival. He grows potatoes in Martian soil using human waste as fertilizer and manages to extract water from leftover rocket fuel. Back on Earth, NASA eventually discovers through satellite images that Mark is still alive. They work to establish communication with him, and soon the world watches his incredible fight for survival. While NASA develops plans to send him supplies, Mark keeps encountering life-threatening challenges like oxygen shortages, equipment failures, and habitat explosions. Despite these dangers, his humor and never-give-up attitude help him keep going. Mark’s mission becomes a global effort as NASA and his crew work together to find a way to bring him home. His crew, devastated at having left him behind, make the risky decision to turn around and attempt a rescue. With limited resources, they coordinate with NASA to carry out a daring plan, even though it means putting their own lives on the line. In the end, Mark’s ingenuity and the support of his team lead to a tense, last-minute rescue as his crew picks him up just in time. The novel showcases human perseverance, hope, and the power of problem-solving under extreme pressure. Mark Watney’s story is not just about surviving on Mars, but about the strength of human spirit and teamwork in overcoming the most daunting odds." ,
+                    image: "https://m.media-amazon.com/images/I/51QimqeXMXL._AC_UF1000,1000_QL80_.jpg",
+                    type: "scifi",
+                    rating:4.8,
+                    reviews : ["A thrilling, humorous survival story of an astronaut stranded on Mars, blending science",]
+                    
+                },
+                {
+                    id: 30,
+                    title: "The Left Hand of Darkness",
+                    author:"Ursula K. Le Guin",
+                    date: "1969",
+                    content:"In The Left Hand of Darkness, Genly Ai, an envoy from the Ekumen (a coalition of planets), is sent to the icy planet Gethen to convince its nations to join this interstellar collective. Gethen is unique because its inhabitants are ambisexual, shifting between male and female traits during different phases of their reproductive cycle. This gender fluidity challenges Genly’s worldview, making it difficult for him to navigate Gethenian society and politics. His mission starts in Karhide, one of the planet’s main nations, where he struggles to gain the trust of its king, Argaven. Political intrigue and mistrust grow, and Genly finds himself caught in the middle of Karhide's instability. He eventually flees to the neighboring nation of Orgoreyn, hoping for a more favorable reception. At first, the leaders of Orgoreyn seem open to his mission, but he is soon betrayed and imprisoned in a brutal labor camp. His only ally turns out to be Estraven, a former Karhide politician who had been exiled. Despite their rocky history, Estraven risks everything to rescue Genly. The heart of the story unfolds as Genly and Estraven embark on a perilous journey across a vast, frozen wilderness to escape back to Karhide. During this journey, Genly begins to understand Estraven's loyalty and the complex nature of Gethenian society. Their relationship deepens, challenging Genly’s previous assumptions about gender, trust, and loyalty. The harsh environment tests both their physical endurance and their evolving friendship. By the end of the novel, Genly achieves some success in his mission, though at great personal cost. Through Genly’s journey and his bond with Estraven, Le Guin explores themes of identity, gender fluidity, and the power of human connection in the face of cultural differences. The Left Hand of Darkness is a profound reflection on how people can transcend barriers, both societal and personal, when faced with shared challenges." ,
+                    image: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1488213612l/18423._SY475_.jpg",
+                    type: "scifi",
+                    rating:4.6,
+                    reviews : ["A fascinating exploration of gender and culture on a planet where inhabitants can change sex.",]
+                    
+                },
+                {
+                    id: 31,
+                    title: "The Three-Body Problem",
+                    author:"Liu Cixin",
+                    date: "2008",
+                    content:"The Three-Body Problem begins during China’s Cultural Revolution, where a physicist named Ye Wenjie witnesses the brutal death of her father, a fellow scientist, and becomes disillusioned with humanity. She is later recruited to work at a top-secret military project called Red Coast, which aims to search for extraterrestrial life. During her time there, Ye makes a fateful decision: she responds to an alien signal from a distant star system called Trisolaris, setting off a chain of events that will shape the future of Earth. The Trisolarans, living in a chaotic star system with three suns, are desperate to escape their planet’s unstable environment, where their civilization is constantly being destroyed and rebuilt due to unpredictable cosmic conditions. They see Earth as a perfect refuge and plan to invade. Meanwhile, on Earth, scientists and intellectuals begin to experience strange phenomena, such as the breakdown of basic scientific principles, causing fear and confusion in the scientific community. The mysterious Trisolaran threat is hidden from the public for years. At the center of the story is Wang Miao, a nanotechnology expert, who is drawn into a secretive group called the Three-Body Problem, named after an immersive virtual reality game that simulates the unpredictable environment of the Trisolaran world. Through this game, Wang learns about the Trisolarans' history and the complexity of their world, where they must predict their suns’ movements to survive. As Wang uncovers more clues, he realizes that Earth faces an existential threat from the impending Trisolaran invasion. As the novel progresses, humanity is split between those who welcome the Trisolarans, believing they can bring about a new order, and those who fight to protect Earth. The book explores deep themes of humanity’s place in the universe, the clash of civilizations, and the fragility of scientific knowledge. The Three-Body Problem masterfully blends hard science with philosophical questions, creating a story that is as thought-provoking as it is thrilling, setting the stage for the broader conflict to come in the trilogy." ,
+                    image: "https://m.media-amazon.com/images/I/818l7Ujz5-L._AC_UF1000,1000_QL80_.jpg",
+                    type: "scifi",
+                    rating:4.5,
+                    reviews : ["A mind-expanding tale of humanity's first contact with an alien civilization, combining physics and complex storytelling.",]
+                    
+                },
+                {
+                    id: 33,
+                    title: "Ender's Game",
+                    author:"Orson Scott Card",
+                    date: "1985",
+                    content:"Ender’s Game follows Ender Wiggin, a young boy selected to attend Battle School, a military academy in space that trains gifted children to fight against an alien species called the Formics, or buggers After two previous invasions, Earth's government believes that only the best and brightest can save humanity. Ender, the third child in a society that limits families to two children, feels the pressure of being both a prodigy and an outcast. At Battle School, Ender faces intense training and isolation, manipulated by Colonel Graff, who believes that separating Ender from his peers will strengthen his leadership skills. As he excels in zero-gravity war games, Ender forms important friendships with fellow recruits like Alai and Petra. However, he also endures bullying and the psychological challenges posed by the adults in charge, leading him to question the morality of their methods. Ender participates in increasingly difficult simulations, ultimately commanding a fleet in what he believes is a final training exercise against the Formics. He devises a brilliant strategy that leads to the complete destruction of the Formic homeworld, only to later learn that the simulation was real, and he has committed genocide against the species. The novel explores themes of leadership, ethics, and the morality of war. Ender grapples with guilt over his actions and seeks redemption, ultimately choosing to understand the Formics instead of viewing them solely as enemies. Ender's Game challenges readers to reflect on the complexities of warfare and the consequences of their decisions, highlighting humanity's capacity for both destruction and empathy." ,
+                    image: "https://mpd-biblio-covers.imgix.net/9781429963930.jpg",
+                    type: "scifi",
+                    rating:4.9,
+                    reviews : [" A brilliant young boy is trained to lead Earth's fleet against an alien enemy in this tense and intelligent novel.",]
+                    
+                },
+                {
+                    id: 34,
+                    title: "Dune",
+                    author:"Frank Herbert",
+                    date: "1965",
+                    content:"Dune is set in a distant future where interstellar travel and feudal societies dominate the universe. The story follows Paul Atreides, the young heir of House Atreides, as his family is given control of the desert planet Arrakis, also known as Dune. This harsh world is the only source of the valuable spice melange, which is essential for space navigation and extends life. However, Arrakis is also home to giant sandworms and the native Fremen people, who have their own culture and secrets. As House Atreides begins to settle on Arrakis, they face betrayal from rival House Harkonnen, which seeks to reclaim control of the planet. Following a devastating attack, Paul and his mother, Lady Jessica, flee into the desert. They find refuge among the Fremen, who see Paul as a potential messianic figure, fulfilling their prophecies of a leader who will lead them to freedom. Paul trains in the ways of the Fremen, honing his abilities and becoming a formidable leader. As Paul embraces his destiny, he learns to harness the power of the spice, which enhances his mental abilities and allows him to see possible futures. He begins to lead the Fremen in a rebellion against the oppressive rule of the Harkonnens and the Emperor, who has conspired against the Atreides. Through a combination of political strategy and warfare, Paul aims to reclaim his family’s honor and secure a future for the Fremen people. Dune explores themes of power, ecology, religion, and the consequences of humanity's actions. Paul’s journey is not just about survival but also about understanding the intricate balance between politics, religion, and the environment of Arrakis. The novel is a profound reflection on leadership and the responsibilities that come with it, making it a cornerstone of science fiction literature." ,
+                    image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1555447414i/44767458.jpg",
+                    type: "scifi",
+                    rating:4.7,
+                    reviews : ["A classic space epic of politics, power, and environmentalism set on the desert planet Arrakis.",]
+                    
+                },
+                {
+                    id: 35,
+                    title: "Children of Time",
+                    author:"Adrian Tchaikovsky",
+                    date: "2015",
+                    content:"Children of Time begins in a future where humanity faces extinction due to war and environmental collapse. In a desperate attempt to save the species, scientists launch a project to uplift a species of monkeys on a terraformed planet using a virus to enhance their intelligence. However, the experiment fails, leading to the extinction of the monkeys and the accidental rise of intelligent spiders instead. As time passes, these spiders evolve into a complex society while humanity struggles to survive on a dying Earth. Meanwhile, the last remnants of humanity embark on the spaceship Gilgamesh, searching for a new home among the stars. Filled with humanity’s best minds, the ship seeks a future as Earth decays. They receive signals from the abandoned planet that was once the site of the uplift experiment, now inhabited by the evolved spider civilization, which poses new challenges for the desperate humans. As the two species—humans and spiders—begin to interact, their vastly different cultures lead to tension and misunderstandings. The spiders have developed a sophisticated society, while the humans grapple with their existential crises aboard the Gilgamesh. Themes of communication and the nature of intelligence emerge as both species confront their histories and futures. Ultimately, Children of Time explores what it means to be intelligent and the potential for coexistence between species. Tchaikovsky examines survival, legacy, and evolution, crafting a thought-provoking narrative that challenges readers to consider the broader implications of humanity's choices and the diverse forms that intelligence can take." ,
+                    image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1431014197i/25499718.jpg",
+                    type: "scifi",
+                    rating:4.8,
+                    reviews : ["Humanity tries to start over on a new planet, but things don't go as planned. And, uh, intelligent spiders. Yep, spiders. 🕷️🌍",]
+                    
+                },
+            ]
+        };
+
+
+        function loadCategory(category) {
+        const content = document.getElementById('content');
+        content.innerHTML = `
+            <div class="header-image"></div>
+            <h2>${category.charAt(0).toUpperCase() + category.slice(1)} Stories</h2>
+            ${stories[category].map(story => `
+                <div class="story-preview">
+                    <img src="${story.image}" alt="${story.title}">
+                    <div>
+                        <h2>${story.title}</h2>
+                        <p>By ${story.author} | ${story.date}</p>
+                        <p>${story.content.substring(0, 100)}...</p>
+                        <button onclick="viewStory(${story.id}, '${category}')">Read More</button>
+                    </div>
+                </div>
+            `).join('')}
+        `;
+    }
+
+    function viewStory(id, category) {
+        // Flatten the stories object and find the story by id
+        const story = Object.values(stories).flat().find(s => s.id === id);
+        if (!story) {
+            console.error("Story not found!");
+            return;
+        }
+
+        const content = document.getElementById('content');
+        content.innerHTML = `
+            <div class="story-detail">
+                <img src="${story.image}" alt="${story.title}">
+                <div class="story-detail-content">
+                    <h2>${story.title}</h2>
+                    <p>By ${story.author} | ${story.date}</p>
+                    <p>${story.content}</p>
+                    <div class="rating">
+                        ${'★'.repeat(Math.floor(story.rating))}${'☆'.repeat(5 - Math.floor(story.rating))}
+                    </div>
+                    <div class="review-summary">
+                        <p><strong>Reviews:</strong></p>
+                        ${story.reviews.map(review => `<p>${review}</p>`).join('')}
+                    </div>
+                    <a class="back-link" onclick="loadCategory('${category}')">Back to ${category.charAt(0).toUpperCase() + category.slice(1)} Stories</a>
+                </div>
+            </div>
+        `;
+    }
+</script>
+</body>
+</html>
